@@ -1,6 +1,21 @@
 { config, lib, ... }:
 
 {
+  _module.types.Action = with lib; with config._module.types; with lib.types; submodule ({ name, ... }: {
+    options.args = mkOption {
+      type = (nullOr (listOf str));
+      default = null;
+    };
+    options.command = mkOption {
+      type = str;
+    };
+    options.name = mkOption {
+      type = str;
+      default = name;
+      internal = true;
+      visible = false;
+    };
+  });
   _module.types.Affinity = with lib; with config._module.types; with lib.types; submodule ({
     options.attribute = mkOption {
       type = (nullOr str);
@@ -74,7 +89,15 @@
     };
   });
   _module.types.Consul = with lib; with config._module.types; with lib.types; submodule ({
+    options.cluster = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
     options.namespace = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.partition = mkOption {
       type = (nullOr str);
       default = null;
     };
@@ -190,12 +213,40 @@
       type = (nullOr bool);
       default = null;
     };
+    options.sds = mkOption {
+      type = (nullOr ConsulGatewayTlssdsConfig);
+      default = null;
+    };
     options.tlsMaxVersion = mkOption {
       type = (nullOr str);
       default = null;
     };
     options.tlsMinVersion = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+  });
+  _module.types.ConsulGatewayTlssdsConfig = with lib; with config._module.types; with lib.types; submodule ({
+    options.certResource = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.clusterName = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+  });
+  _module.types.ConsulHttpHeaderModifiers = with lib; with config._module.types; with lib.types; submodule ({
+    options.add = mkOption {
+      type = (nullOr (attrsOf str));
+      default = null;
+    };
+    options.remove = mkOption {
+      type = (nullOr (listOf str));
+      default = null;
+    };
+    options.set = mkOption {
+      type = (nullOr (attrsOf str));
       default = null;
     };
   });
@@ -228,8 +279,32 @@
       type = (nullOr (listOf str));
       default = null;
     };
+    options.maxConcurrentRequests = mkOption {
+      type = (nullOr ints.unsigned);
+      default = null;
+    };
+    options.maxConnections = mkOption {
+      type = (nullOr ints.unsigned);
+      default = null;
+    };
+    options.maxPendingRequests = mkOption {
+      type = (nullOr ints.unsigned);
+      default = null;
+    };
     options.name = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+    options.requestHeaders = mkOption {
+      type = (nullOr ConsulHttpHeaderModifiers);
+      default = null;
+    };
+    options.responseHeaders = mkOption {
+      type = (nullOr ConsulHttpHeaderModifiers);
+      default = null;
+    };
+    options.tls = mkOption {
+      type = (nullOr ConsulGatewayTlsConfig);
       default = null;
     };
   });
@@ -330,12 +405,32 @@
       type = (nullOr str);
       default = null;
     };
+    options.destinationPartition = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.destinationPeer = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.destinationType = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
     options.localBindAddress = mkOption {
       type = (nullOr str);
       default = null;
     };
     options.localBindPort = mkOption {
       type = (nullOr int);
+      default = null;
+    };
+    options.localBindSocketMode = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.localBindSocketPath = mkOption {
+      type = (nullOr str);
       default = null;
     };
     options.meshGateway = mkOption {
@@ -427,6 +522,10 @@
       visible = false;
     };
     options.namespace = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.nodePool = mkOption {
       type = (nullOr str);
       default = null;
     };
@@ -532,6 +631,10 @@
       internal = true;
       visible = false;
     };
+    options.nodePool = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
   });
   _module.types.MultiregionStrategy = with lib; with config._module.types; with lib.types; submodule ({
     options.maxParallel = mkOption {
@@ -539,6 +642,12 @@
       default = null;
     };
     options.onFailure = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+  });
+  _module.types.NumaResource = with lib; with config._module.types; with lib.types; submodule ({
+    options.affinity = mkOption {
       type = (nullOr str);
       default = null;
     };
@@ -598,6 +707,10 @@
   _module.types.PeriodicConfig = with lib; with config._module.types; with lib.types; submodule ({
     options.cron = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+    options.crons = mkOption {
+      type = (nullOr (listOf str));
       default = null;
     };
     options.enabled = mkOption {
@@ -712,6 +825,10 @@
       type = (nullOr (listOf NetworkResource));
       default = null;
     };
+    options.numa = mkOption {
+      type = (nullOr NumaResource);
+      default = null;
+    };
   });
   _module.types.RestartPolicy = with lib; with config._module.types; with lib.types; submodule ({
     options.attempts = mkOption {
@@ -728,6 +845,10 @@
     };
     options.mode = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+    options.renderTemplates = mkOption {
+      type = (nullOr bool);
       default = null;
     };
   });
@@ -778,12 +899,20 @@
       type = (nullOr (listOf ServiceCheck));
       default = null;
     };
+    options.cluster = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
     options.connect = mkOption {
       type = (nullOr ConsulConnect);
       default = null;
     };
     options.enableTagOverride = mkOption {
       type = (nullOr bool);
+      default = null;
+    };
+    options.identity = mkOption {
+      type = (nullOr WorkloadIdentity);
       default = null;
     };
     options.meta = mkOption {
@@ -852,6 +981,10 @@
       type = (nullOr int);
       default = null;
     };
+    options.failuresBeforeWarning = mkOption {
+      type = (nullOr int);
+      default = null;
+    };
     options.grpcService = mkOption {
       type = (nullOr str);
       default = null;
@@ -906,6 +1039,10 @@
     };
     options.timeout = mkOption {
       type = (nullOr int);
+      default = null;
+    };
+    options.tlsServerName = mkOption {
+      type = (nullOr str);
       default = null;
     };
     options.tlsSkipVerify = mkOption {
@@ -990,6 +1127,10 @@
     };
   });
   _module.types.Task = with lib; with config._module.types; with lib.types; submodule ({ name, ... }: {
+    options.action = mkOption {
+      type = (nullOr (attrsOf Action));
+      default = null;
+    };
     options.affinities = mkOption {
       type = (nullOr (listOf Affinity));
       default = null;
@@ -1004,6 +1145,10 @@
     };
     options.constraints = mkOption {
       type = (nullOr (listOf Constraint));
+      default = null;
+    };
+    options.consul = mkOption {
+      type = (nullOr Consul);
       default = null;
     };
     options.csiPlugin = mkOption {
@@ -1022,8 +1167,8 @@
       type = (nullOr (attrsOf str));
       default = null;
     };
-    options.identity = mkOption {
-      type = (nullOr WorkloadIdentity);
+    options.identities = mkOption {
+      type = (nullOr (listOf WorkloadIdentity));
       default = null;
     };
     options.killSignal = mkOption {
@@ -1184,6 +1329,10 @@
       type = (nullOr (listOf NetworkResource));
       default = null;
     };
+    options.preventRescheduleOnLost = mkOption {
+      type = (nullOr bool);
+      default = null;
+    };
     options.reschedule = mkOption {
       type = (nullOr ReschedulePolicy);
       default = null;
@@ -1340,12 +1489,24 @@
     };
   });
   _module.types.Vault = with lib; with config._module.types; with lib.types; submodule ({
+    options.allowTokenExpiration = mkOption {
+      type = (nullOr bool);
+      default = null;
+    };
     options.changeMode = mkOption {
       type = (nullOr str);
       default = null;
     };
     options.changeSignal = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+    options.cluster = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.disableFile = mkOption {
+      type = (nullOr bool);
       default = null;
     };
     options.env = mkOption {
@@ -1358,6 +1519,10 @@
     };
     options.policies = mkOption {
       type = (nullOr (listOf str));
+      default = null;
+    };
+    options.role = mkOption {
+      type = (nullOr str);
       default = null;
     };
   });
@@ -1424,6 +1589,18 @@
     };
   });
   _module.types.WorkloadIdentity = with lib; with config._module.types; with lib.types; submodule ({
+    options.aud = mkOption {
+      type = (nullOr (listOf str));
+      default = null;
+    };
+    options.changeMode = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.changeSignal = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
     options.env = mkOption {
       type = (nullOr bool);
       default = null;
@@ -1432,7 +1609,35 @@
       type = (nullOr bool);
       default = null;
     };
+    options.name = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.serviceName = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.ttl = mkOption {
+      type = (nullOr int);
+      default = null;
+    };
   });
+
+  # Convert a Action Nix module into a JSON object.
+  _module.transformers.Action.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? args && attrs.args != null then { Args = attrs.args; } else {})
+    // (if attrs ? command && attrs.command != null then { Command = attrs.command; } else {})
+    // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
+  );
+
+  # Convert a Action JSON object into a Nix module.
+  _module.transformers.Action.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Args && attrs.Args != null then { args = attrs.Args; } else {})
+    // (if attrs ? Command && attrs.Command != null then { command = attrs.Command; } else {})
+    // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
+  );
 
   # Convert a Affinity Nix module into a JSON object.
   _module.transformers.Affinity.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
@@ -1519,13 +1724,17 @@
   # Convert a Consul Nix module into a JSON object.
   _module.transformers.Consul.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
+    // (if attrs ? cluster && attrs.cluster != null then { Cluster = attrs.cluster; } else {})
     // (if attrs ? namespace && attrs.namespace != null then { Namespace = attrs.namespace; } else {})
+    // (if attrs ? partition && attrs.partition != null then { Partition = attrs.partition; } else {})
   );
 
   # Convert a Consul JSON object into a Nix module.
   _module.transformers.Consul.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
+    // (if attrs ? Cluster && attrs.Cluster != null then { cluster = attrs.Cluster; } else {})
     // (if attrs ? Namespace && attrs.Namespace != null then { namespace = attrs.Namespace; } else {})
+    // (if attrs ? Partition && attrs.Partition != null then { partition = attrs.Partition; } else {})
   );
 
   # Convert a ConsulConnect Nix module into a JSON object.
@@ -1637,6 +1846,7 @@
     {}
     // (if attrs ? cipherSuites && attrs.cipherSuites != null then { CipherSuites = attrs.cipherSuites; } else {})
     // (if attrs ? enabled && attrs.enabled != null then { Enabled = attrs.enabled; } else {})
+    // (if attrs ? sds && attrs.sds != null then { SDS = ConsulGatewayTlssdsConfig.toJSON attrs.sds; } else {})
     // (if attrs ? tlsMaxVersion && attrs.tlsMaxVersion != null then { TLSMaxVersion = attrs.tlsMaxVersion; } else {})
     // (if attrs ? tlsMinVersion && attrs.tlsMinVersion != null then { TLSMinVersion = attrs.tlsMinVersion; } else {})
   );
@@ -1646,8 +1856,39 @@
     {}
     // (if attrs ? CipherSuites && attrs.CipherSuites != null then { cipherSuites = attrs.CipherSuites; } else {})
     // (if attrs ? Enabled && attrs.Enabled != null then { enabled = attrs.Enabled; } else {})
+    // (if attrs ? SDS && attrs.SDS != null then { sds = ConsulGatewayTlssdsConfig.fromJSON attrs.SDS; } else {})
     // (if attrs ? TLSMaxVersion && attrs.TLSMaxVersion != null then { tlsMaxVersion = attrs.TLSMaxVersion; } else {})
     // (if attrs ? TLSMinVersion && attrs.TLSMinVersion != null then { tlsMinVersion = attrs.TLSMinVersion; } else {})
+  );
+
+  # Convert a ConsulGatewayTlssdsConfig Nix module into a JSON object.
+  _module.transformers.ConsulGatewayTlssdsConfig.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? certResource && attrs.certResource != null then { CertResource = attrs.certResource; } else {})
+    // (if attrs ? clusterName && attrs.clusterName != null then { ClusterName = attrs.clusterName; } else {})
+  );
+
+  # Convert a ConsulGatewayTlssdsConfig JSON object into a Nix module.
+  _module.transformers.ConsulGatewayTlssdsConfig.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? CertResource && attrs.CertResource != null then { certResource = attrs.CertResource; } else {})
+    // (if attrs ? ClusterName && attrs.ClusterName != null then { clusterName = attrs.ClusterName; } else {})
+  );
+
+  # Convert a ConsulHttpHeaderModifiers Nix module into a JSON object.
+  _module.transformers.ConsulHttpHeaderModifiers.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? add && attrs.add != null then { Add = attrs.add; } else {})
+    // (if attrs ? remove && attrs.remove != null then { Remove = attrs.remove; } else {})
+    // (if attrs ? set && attrs.set != null then { Set = attrs.set; } else {})
+  );
+
+  # Convert a ConsulHttpHeaderModifiers JSON object into a Nix module.
+  _module.transformers.ConsulHttpHeaderModifiers.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Add && attrs.Add != null then { add = attrs.Add; } else {})
+    // (if attrs ? Remove && attrs.Remove != null then { remove = attrs.Remove; } else {})
+    // (if attrs ? Set && attrs.Set != null then { set = attrs.Set; } else {})
   );
 
   # Convert a ConsulIngressConfigEntry Nix module into a JSON object.
@@ -1684,14 +1925,26 @@
   _module.transformers.ConsulIngressService.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
     // (if attrs ? hosts && attrs.hosts != null then { Hosts = attrs.hosts; } else {})
+    // (if attrs ? maxConcurrentRequests && attrs.maxConcurrentRequests != null then { MaxConcurrentRequests = attrs.maxConcurrentRequests; } else {})
+    // (if attrs ? maxConnections && attrs.maxConnections != null then { MaxConnections = attrs.maxConnections; } else {})
+    // (if attrs ? maxPendingRequests && attrs.maxPendingRequests != null then { MaxPendingRequests = attrs.maxPendingRequests; } else {})
     // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
+    // (if attrs ? requestHeaders && attrs.requestHeaders != null then { RequestHeaders = ConsulHttpHeaderModifiers.toJSON attrs.requestHeaders; } else {})
+    // (if attrs ? responseHeaders && attrs.responseHeaders != null then { ResponseHeaders = ConsulHttpHeaderModifiers.toJSON attrs.responseHeaders; } else {})
+    // (if attrs ? tls && attrs.tls != null then { TLS = ConsulGatewayTlsConfig.toJSON attrs.tls; } else {})
   );
 
   # Convert a ConsulIngressService JSON object into a Nix module.
   _module.transformers.ConsulIngressService.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
     // (if attrs ? Hosts && attrs.Hosts != null then { hosts = attrs.Hosts; } else {})
+    // (if attrs ? MaxConcurrentRequests && attrs.MaxConcurrentRequests != null then { maxConcurrentRequests = attrs.MaxConcurrentRequests; } else {})
+    // (if attrs ? MaxConnections && attrs.MaxConnections != null then { maxConnections = attrs.MaxConnections; } else {})
+    // (if attrs ? MaxPendingRequests && attrs.MaxPendingRequests != null then { maxPendingRequests = attrs.MaxPendingRequests; } else {})
     // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
+    // (if attrs ? RequestHeaders && attrs.RequestHeaders != null then { requestHeaders = ConsulHttpHeaderModifiers.fromJSON attrs.RequestHeaders; } else {})
+    // (if attrs ? ResponseHeaders && attrs.ResponseHeaders != null then { responseHeaders = ConsulHttpHeaderModifiers.fromJSON attrs.ResponseHeaders; } else {})
+    // (if attrs ? TLS && attrs.TLS != null then { tls = ConsulGatewayTlsConfig.fromJSON attrs.TLS; } else {})
   );
 
   # Convert a ConsulLinkedService Nix module into a JSON object.
@@ -1795,8 +2048,13 @@
     // (if attrs ? datacenter && attrs.datacenter != null then { Datacenter = attrs.datacenter; } else {})
     // (if attrs ? destinationName && attrs.destinationName != null then { DestinationName = attrs.destinationName; } else {})
     // (if attrs ? destinationNamespace && attrs.destinationNamespace != null then { DestinationNamespace = attrs.destinationNamespace; } else {})
+    // (if attrs ? destinationPartition && attrs.destinationPartition != null then { DestinationPartition = attrs.destinationPartition; } else {})
+    // (if attrs ? destinationPeer && attrs.destinationPeer != null then { DestinationPeer = attrs.destinationPeer; } else {})
+    // (if attrs ? destinationType && attrs.destinationType != null then { DestinationType = attrs.destinationType; } else {})
     // (if attrs ? localBindAddress && attrs.localBindAddress != null then { LocalBindAddress = attrs.localBindAddress; } else {})
     // (if attrs ? localBindPort && attrs.localBindPort != null then { LocalBindPort = attrs.localBindPort; } else {})
+    // (if attrs ? localBindSocketMode && attrs.localBindSocketMode != null then { LocalBindSocketMode = attrs.localBindSocketMode; } else {})
+    // (if attrs ? localBindSocketPath && attrs.localBindSocketPath != null then { LocalBindSocketPath = attrs.localBindSocketPath; } else {})
     // (if attrs ? meshGateway && attrs.meshGateway != null then { MeshGateway = ConsulMeshGateway.toJSON attrs.meshGateway; } else {})
   );
 
@@ -1807,8 +2065,13 @@
     // (if attrs ? Datacenter && attrs.Datacenter != null then { datacenter = attrs.Datacenter; } else {})
     // (if attrs ? DestinationName && attrs.DestinationName != null then { destinationName = attrs.DestinationName; } else {})
     // (if attrs ? DestinationNamespace && attrs.DestinationNamespace != null then { destinationNamespace = attrs.DestinationNamespace; } else {})
+    // (if attrs ? DestinationPartition && attrs.DestinationPartition != null then { destinationPartition = attrs.DestinationPartition; } else {})
+    // (if attrs ? DestinationPeer && attrs.DestinationPeer != null then { destinationPeer = attrs.DestinationPeer; } else {})
+    // (if attrs ? DestinationType && attrs.DestinationType != null then { destinationType = attrs.DestinationType; } else {})
     // (if attrs ? LocalBindAddress && attrs.LocalBindAddress != null then { localBindAddress = attrs.LocalBindAddress; } else {})
     // (if attrs ? LocalBindPort && attrs.LocalBindPort != null then { localBindPort = attrs.LocalBindPort; } else {})
+    // (if attrs ? LocalBindSocketMode && attrs.LocalBindSocketMode != null then { localBindSocketMode = attrs.LocalBindSocketMode; } else {})
+    // (if attrs ? LocalBindSocketPath && attrs.LocalBindSocketPath != null then { localBindSocketPath = attrs.LocalBindSocketPath; } else {})
     // (if attrs ? MeshGateway && attrs.MeshGateway != null then { meshGateway = ConsulMeshGateway.fromJSON attrs.MeshGateway; } else {})
   );
 
@@ -1871,6 +2134,7 @@
     // (if attrs ? multiregion && attrs.multiregion != null then { Multiregion = Multiregion.toJSON attrs.multiregion; } else {})
     // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
     // (if attrs ? namespace && attrs.namespace != null then { Namespace = attrs.namespace; } else {})
+    // (if attrs ? nodePool && attrs.nodePool != null then { NodePool = attrs.nodePool; } else {})
     // (if attrs ? parameterized && attrs.parameterized != null then { ParameterizedJob = ParameterizedJobConfig.toJSON attrs.parameterized; } else {})
     // (if attrs ? periodic && attrs.periodic != null then { Periodic = PeriodicConfig.toJSON attrs.periodic; } else {})
     // (if attrs ? priority && attrs.priority != null then { Priority = attrs.priority; } else {})
@@ -1897,6 +2161,7 @@
     // (if attrs ? Multiregion && attrs.Multiregion != null then { multiregion = Multiregion.fromJSON attrs.Multiregion; } else {})
     // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
     // (if attrs ? Namespace && attrs.Namespace != null then { namespace = attrs.Namespace; } else {})
+    // (if attrs ? NodePool && attrs.NodePool != null then { nodePool = attrs.NodePool; } else {})
     // (if attrs ? ParameterizedJob && attrs.ParameterizedJob != null then { parameterized = ParameterizedJobConfig.fromJSON attrs.ParameterizedJob; } else {})
     // (if attrs ? Periodic && attrs.Periodic != null then { periodic = PeriodicConfig.fromJSON attrs.Periodic; } else {})
     // (if attrs ? Priority && attrs.Priority != null then { priority = attrs.Priority; } else {})
@@ -1965,6 +2230,7 @@
     // (if attrs ? datacenters && attrs.datacenters != null then { Datacenters = attrs.datacenters; } else {})
     // (if attrs ? meta && attrs.meta != null then { Meta = attrs.meta; } else {})
     // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
+    // (if attrs ? nodePool && attrs.nodePool != null then { NodePool = attrs.nodePool; } else {})
   );
 
   # Convert a MultiregionRegion JSON object into a Nix module.
@@ -1974,6 +2240,7 @@
     // (if attrs ? Datacenters && attrs.Datacenters != null then { datacenters = attrs.Datacenters; } else {})
     // (if attrs ? Meta && attrs.Meta != null then { meta = attrs.Meta; } else {})
     // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
+    // (if attrs ? NodePool && attrs.NodePool != null then { nodePool = attrs.NodePool; } else {})
   );
 
   # Convert a MultiregionStrategy Nix module into a JSON object.
@@ -1988,6 +2255,18 @@
     {}
     // (if attrs ? MaxParallel && attrs.MaxParallel != null then { maxParallel = attrs.MaxParallel; } else {})
     // (if attrs ? OnFailure && attrs.OnFailure != null then { onFailure = attrs.OnFailure; } else {})
+  );
+
+  # Convert a NumaResource Nix module into a JSON object.
+  _module.transformers.NumaResource.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? affinity && attrs.affinity != null then { Affinity = attrs.affinity; } else {})
+  );
+
+  # Convert a NumaResource JSON object into a Nix module.
+  _module.transformers.NumaResource.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Affinity && attrs.Affinity != null then { affinity = attrs.Affinity; } else {})
   );
 
   # Convert a NetworkResource Nix module into a JSON object.
@@ -2038,6 +2317,7 @@
   _module.transformers.PeriodicConfig.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
     // (if attrs ? cron && attrs.cron != null then { Spec = attrs.cron; } else {})
+    // (if attrs ? crons && attrs.crons != null then { Specs = attrs.crons; } else {})
     // (if attrs ? enabled && attrs.enabled != null then { Enabled = attrs.enabled; } else {})
     // (if attrs ? prohibitOverlap && attrs.prohibitOverlap != null then { ProhibitOverlap = attrs.prohibitOverlap; } else {})
     // (if attrs ? timeZone && attrs.timeZone != null then { TimeZone = attrs.timeZone; } else {})
@@ -2047,6 +2327,7 @@
   _module.transformers.PeriodicConfig.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
     // (if attrs ? Spec && attrs.Spec != null then { cron = attrs.Spec; } else {})
+    // (if attrs ? Specs && attrs.Specs != null then { crons = attrs.Specs; } else {})
     // (if attrs ? Enabled && attrs.Enabled != null then { enabled = attrs.Enabled; } else {})
     // (if attrs ? ProhibitOverlap && attrs.ProhibitOverlap != null then { prohibitOverlap = attrs.ProhibitOverlap; } else {})
     // (if attrs ? TimeZone && attrs.TimeZone != null then { timeZone = attrs.TimeZone; } else {})
@@ -2121,6 +2402,7 @@
     // (if attrs ? memory && attrs.memory != null then { MemoryMB = attrs.memory; } else {})
     // (if attrs ? memoryMax && attrs.memoryMax != null then { MemoryMaxMB = attrs.memoryMax; } else {})
     // (if attrs ? networks && builtins.isList attrs.networks then { Networks = builtins.map NetworkResource.toJSON attrs.networks; } else {})
+    // (if attrs ? numa && attrs.numa != null then { NUMA = NumaResource.toJSON attrs.numa; } else {})
   );
 
   # Convert a Resources JSON object into a Nix module.
@@ -2134,6 +2416,7 @@
     // (if attrs ? MemoryMB && attrs.MemoryMB != null then { memory = attrs.MemoryMB; } else {})
     // (if attrs ? MemoryMaxMB && attrs.MemoryMaxMB != null then { memoryMax = attrs.MemoryMaxMB; } else {})
     // (if attrs ? Networks && builtins.isList attrs.Networks then { networks = builtins.map NetworkResource.fromJSON attrs.Networks; } else {})
+    // (if attrs ? NUMA && attrs.NUMA != null then { numa = NumaResource.fromJSON attrs.NUMA; } else {})
   );
 
   # Convert a RestartPolicy Nix module into a JSON object.
@@ -2143,6 +2426,7 @@
     // (if attrs ? delay && attrs.delay != null then { Delay = attrs.delay; } else {})
     // (if attrs ? interval && attrs.interval != null then { Interval = attrs.interval; } else {})
     // (if attrs ? mode && attrs.mode != null then { Mode = attrs.mode; } else {})
+    // (if attrs ? renderTemplates && attrs.renderTemplates != null then { RenderTemplates = attrs.renderTemplates; } else {})
   );
 
   # Convert a RestartPolicy JSON object into a Nix module.
@@ -2152,6 +2436,7 @@
     // (if attrs ? Delay && attrs.Delay != null then { delay = attrs.Delay; } else {})
     // (if attrs ? Interval && attrs.Interval != null then { interval = attrs.Interval; } else {})
     // (if attrs ? Mode && attrs.Mode != null then { mode = attrs.Mode; } else {})
+    // (if attrs ? RenderTemplates && attrs.RenderTemplates != null then { renderTemplates = attrs.RenderTemplates; } else {})
   );
 
   # Convert a ScalingPolicy Nix module into a JSON object.
@@ -2183,8 +2468,10 @@
     // (if attrs ? canaryTags && attrs.canaryTags != null then { CanaryTags = attrs.canaryTags; } else {})
     // (if attrs ? checkRestart && attrs.checkRestart != null then { CheckRestart = CheckRestart.toJSON attrs.checkRestart; } else {})
     // (if attrs ? checks && builtins.isList attrs.checks then { Checks = builtins.map ServiceCheck.toJSON attrs.checks; } else {})
+    // (if attrs ? cluster && attrs.cluster != null then { Cluster = attrs.cluster; } else {})
     // (if attrs ? connect && attrs.connect != null then { Connect = ConsulConnect.toJSON attrs.connect; } else {})
     // (if attrs ? enableTagOverride && attrs.enableTagOverride != null then { EnableTagOverride = attrs.enableTagOverride; } else {})
+    // (if attrs ? identity && attrs.identity != null then { Identity = WorkloadIdentity.toJSON attrs.identity; } else {})
     // (if attrs ? meta && attrs.meta != null then { Meta = attrs.meta; } else {})
     // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
     // (if attrs ? onUpdate && attrs.onUpdate != null then { OnUpdate = attrs.onUpdate; } else {})
@@ -2204,8 +2491,10 @@
     // (if attrs ? CanaryTags && attrs.CanaryTags != null then { canaryTags = attrs.CanaryTags; } else {})
     // (if attrs ? CheckRestart && attrs.CheckRestart != null then { checkRestart = CheckRestart.fromJSON attrs.CheckRestart; } else {})
     // (if attrs ? Checks && builtins.isList attrs.Checks then { checks = builtins.map ServiceCheck.fromJSON attrs.Checks; } else {})
+    // (if attrs ? Cluster && attrs.Cluster != null then { cluster = attrs.Cluster; } else {})
     // (if attrs ? Connect && attrs.Connect != null then { connect = ConsulConnect.fromJSON attrs.Connect; } else {})
     // (if attrs ? EnableTagOverride && attrs.EnableTagOverride != null then { enableTagOverride = attrs.EnableTagOverride; } else {})
+    // (if attrs ? Identity && attrs.Identity != null then { identity = WorkloadIdentity.fromJSON attrs.Identity; } else {})
     // (if attrs ? Meta && attrs.Meta != null then { meta = attrs.Meta; } else {})
     // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
     // (if attrs ? OnUpdate && attrs.OnUpdate != null then { onUpdate = attrs.OnUpdate; } else {})
@@ -2227,6 +2516,7 @@
     // (if attrs ? command && attrs.command != null then { Command = attrs.command; } else {})
     // (if attrs ? expose && attrs.expose != null then { Expose = attrs.expose; } else {})
     // (if attrs ? failuresBeforeCritical && attrs.failuresBeforeCritical != null then { FailuresBeforeCritical = attrs.failuresBeforeCritical; } else {})
+    // (if attrs ? failuresBeforeWarning && attrs.failuresBeforeWarning != null then { FailuresBeforeWarning = attrs.failuresBeforeWarning; } else {})
     // (if attrs ? grpcService && attrs.grpcService != null then { GRPCService = attrs.grpcService; } else {})
     // (if attrs ? grpcUseTls && attrs.grpcUseTls != null then { GRPCUseTLS = attrs.grpcUseTls; } else {})
     // (if attrs ? header && attrs.header != null then { Header = attrs.header; } else {})
@@ -2241,6 +2531,7 @@
     // (if attrs ? successBeforePassing && attrs.successBeforePassing != null then { SuccessBeforePassing = attrs.successBeforePassing; } else {})
     // (if attrs ? task && attrs.task != null then { TaskName = attrs.task; } else {})
     // (if attrs ? timeout && attrs.timeout != null then { Timeout = attrs.timeout; } else {})
+    // (if attrs ? tlsServerName && attrs.tlsServerName != null then { TLSServerName = attrs.tlsServerName; } else {})
     // (if attrs ? tlsSkipVerify && attrs.tlsSkipVerify != null then { TLSSkipVerify = attrs.tlsSkipVerify; } else {})
     // (if attrs ? type && attrs.type != null then { Type = attrs.type; } else {})
   );
@@ -2256,6 +2547,7 @@
     // (if attrs ? Command && attrs.Command != null then { command = attrs.Command; } else {})
     // (if attrs ? Expose && attrs.Expose != null then { expose = attrs.Expose; } else {})
     // (if attrs ? FailuresBeforeCritical && attrs.FailuresBeforeCritical != null then { failuresBeforeCritical = attrs.FailuresBeforeCritical; } else {})
+    // (if attrs ? FailuresBeforeWarning && attrs.FailuresBeforeWarning != null then { failuresBeforeWarning = attrs.FailuresBeforeWarning; } else {})
     // (if attrs ? GRPCService && attrs.GRPCService != null then { grpcService = attrs.GRPCService; } else {})
     // (if attrs ? GRPCUseTLS && attrs.GRPCUseTLS != null then { grpcUseTls = attrs.GRPCUseTLS; } else {})
     // (if attrs ? Header && attrs.Header != null then { header = attrs.Header; } else {})
@@ -2270,6 +2562,7 @@
     // (if attrs ? SuccessBeforePassing && attrs.SuccessBeforePassing != null then { successBeforePassing = attrs.SuccessBeforePassing; } else {})
     // (if attrs ? TaskName && attrs.TaskName != null then { task = attrs.TaskName; } else {})
     // (if attrs ? Timeout && attrs.Timeout != null then { timeout = attrs.Timeout; } else {})
+    // (if attrs ? TLSServerName && attrs.TLSServerName != null then { tlsServerName = attrs.TLSServerName; } else {})
     // (if attrs ? TLSSkipVerify && attrs.TLSSkipVerify != null then { tlsSkipVerify = attrs.TLSSkipVerify; } else {})
     // (if attrs ? Type && attrs.Type != null then { type = attrs.Type; } else {})
   );
@@ -2339,15 +2632,17 @@
   # Convert a Task Nix module into a JSON object.
   _module.transformers.Task.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
+    // (if attrs ? action && builtins.isAttrs attrs.action then { Actions = mapAttrsToList (_: Action.toJSON) attrs.action; } else {})
     // (if attrs ? affinities && builtins.isList attrs.affinities then { Affinities = builtins.map Affinity.toJSON attrs.affinities; } else {})
     // (if attrs ? artifacts && builtins.isList attrs.artifacts then { Artifacts = builtins.map TaskArtifact.toJSON attrs.artifacts; } else {})
     // (if attrs ? config && attrs.config != null then { Config = attrs.config; } else {})
     // (if attrs ? constraints && builtins.isList attrs.constraints then { Constraints = builtins.map Constraint.toJSON attrs.constraints; } else {})
+    // (if attrs ? consul && attrs.consul != null then { Consul = Consul.toJSON attrs.consul; } else {})
     // (if attrs ? csiPlugin && attrs.csiPlugin != null then { CSIPluginConfig = TaskCsiPluginConfig.toJSON attrs.csiPlugin; } else {})
     // (if attrs ? dispatchPayload && attrs.dispatchPayload != null then { DispatchPayload = DispatchPayloadConfig.toJSON attrs.dispatchPayload; } else {})
     // (if attrs ? driver && attrs.driver != null then { Driver = attrs.driver; } else {})
     // (if attrs ? env && attrs.env != null then { Env = attrs.env; } else {})
-    // (if attrs ? identity && attrs.identity != null then { Identity = WorkloadIdentity.toJSON attrs.identity; } else {})
+    // (if attrs ? identities && builtins.isList attrs.identities then { Identities = builtins.map WorkloadIdentity.toJSON attrs.identities; } else {})
     // (if attrs ? killSignal && attrs.killSignal != null then { KillSignal = attrs.killSignal; } else {})
     // (if attrs ? killTimeout && attrs.killTimeout != null then { KillTimeout = attrs.killTimeout; } else {})
     // (if attrs ? kind && attrs.kind != null then { Kind = attrs.kind; } else {})
@@ -2370,15 +2665,17 @@
   # Convert a Task JSON object into a Nix module.
   _module.transformers.Task.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
+    // (if attrs ? Actions && builtins.isList attrs.Actions then { action = builtins.listToAttrs (builtins.map (v: nameValuePair v.Name (Action.fromJSON v)) attrs.Actions); } else {})
     // (if attrs ? Affinities && builtins.isList attrs.Affinities then { affinities = builtins.map Affinity.fromJSON attrs.Affinities; } else {})
     // (if attrs ? Artifacts && builtins.isList attrs.Artifacts then { artifacts = builtins.map TaskArtifact.fromJSON attrs.Artifacts; } else {})
     // (if attrs ? Config && attrs.Config != null then { config = attrs.Config; } else {})
     // (if attrs ? Constraints && builtins.isList attrs.Constraints then { constraints = builtins.map Constraint.fromJSON attrs.Constraints; } else {})
+    // (if attrs ? Consul && attrs.Consul != null then { consul = Consul.fromJSON attrs.Consul; } else {})
     // (if attrs ? CSIPluginConfig && attrs.CSIPluginConfig != null then { csiPlugin = TaskCsiPluginConfig.fromJSON attrs.CSIPluginConfig; } else {})
     // (if attrs ? DispatchPayload && attrs.DispatchPayload != null then { dispatchPayload = DispatchPayloadConfig.fromJSON attrs.DispatchPayload; } else {})
     // (if attrs ? Driver && attrs.Driver != null then { driver = attrs.Driver; } else {})
     // (if attrs ? Env && attrs.Env != null then { env = attrs.Env; } else {})
-    // (if attrs ? Identity && attrs.Identity != null then { identity = WorkloadIdentity.fromJSON attrs.Identity; } else {})
+    // (if attrs ? Identities && builtins.isList attrs.Identities then { identities = builtins.map WorkloadIdentity.fromJSON attrs.Identities; } else {})
     // (if attrs ? KillSignal && attrs.KillSignal != null then { killSignal = attrs.KillSignal; } else {})
     // (if attrs ? KillTimeout && attrs.KillTimeout != null then { killTimeout = attrs.KillTimeout; } else {})
     // (if attrs ? Kind && attrs.Kind != null then { kind = attrs.Kind; } else {})
@@ -2451,6 +2748,7 @@
     // (if attrs ? migrate && attrs.migrate != null then { Migrate = MigrateStrategy.toJSON attrs.migrate; } else {})
     // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
     // (if attrs ? networks && builtins.isList attrs.networks then { Networks = builtins.map NetworkResource.toJSON attrs.networks; } else {})
+    // (if attrs ? preventRescheduleOnLost && attrs.preventRescheduleOnLost != null then { PreventRescheduleOnLost = attrs.preventRescheduleOnLost; } else {})
     // (if attrs ? reschedule && attrs.reschedule != null then { ReschedulePolicy = ReschedulePolicy.toJSON attrs.reschedule; } else {})
     // (if attrs ? restart && attrs.restart != null then { RestartPolicy = RestartPolicy.toJSON attrs.restart; } else {})
     // (if attrs ? scaling && attrs.scaling != null then { Scaling = ScalingPolicy.toJSON attrs.scaling; } else {})
@@ -2476,6 +2774,7 @@
     // (if attrs ? Migrate && attrs.Migrate != null then { migrate = MigrateStrategy.fromJSON attrs.Migrate; } else {})
     // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
     // (if attrs ? Networks && builtins.isList attrs.Networks then { networks = builtins.map NetworkResource.fromJSON attrs.Networks; } else {})
+    // (if attrs ? PreventRescheduleOnLost && attrs.PreventRescheduleOnLost != null then { preventRescheduleOnLost = attrs.PreventRescheduleOnLost; } else {})
     // (if attrs ? ReschedulePolicy && attrs.ReschedulePolicy != null then { reschedule = ReschedulePolicy.fromJSON attrs.ReschedulePolicy; } else {})
     // (if attrs ? RestartPolicy && attrs.RestartPolicy != null then { restart = RestartPolicy.fromJSON attrs.RestartPolicy; } else {})
     // (if attrs ? Scaling && attrs.Scaling != null then { scaling = ScalingPolicy.fromJSON attrs.Scaling; } else {})
@@ -2575,21 +2874,29 @@
   # Convert a Vault Nix module into a JSON object.
   _module.transformers.Vault.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
+    // (if attrs ? allowTokenExpiration && attrs.allowTokenExpiration != null then { AllowTokenExpiration = attrs.allowTokenExpiration; } else {})
     // (if attrs ? changeMode && attrs.changeMode != null then { ChangeMode = attrs.changeMode; } else {})
     // (if attrs ? changeSignal && attrs.changeSignal != null then { ChangeSignal = attrs.changeSignal; } else {})
+    // (if attrs ? cluster && attrs.cluster != null then { Cluster = attrs.cluster; } else {})
+    // (if attrs ? disableFile && attrs.disableFile != null then { DisableFile = attrs.disableFile; } else {})
     // (if attrs ? env && attrs.env != null then { Env = attrs.env; } else {})
     // (if attrs ? namespace && attrs.namespace != null then { Namespace = attrs.namespace; } else {})
     // (if attrs ? policies && attrs.policies != null then { Policies = attrs.policies; } else {})
+    // (if attrs ? role && attrs.role != null then { Role = attrs.role; } else {})
   );
 
   # Convert a Vault JSON object into a Nix module.
   _module.transformers.Vault.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
+    // (if attrs ? AllowTokenExpiration && attrs.AllowTokenExpiration != null then { allowTokenExpiration = attrs.AllowTokenExpiration; } else {})
     // (if attrs ? ChangeMode && attrs.ChangeMode != null then { changeMode = attrs.ChangeMode; } else {})
     // (if attrs ? ChangeSignal && attrs.ChangeSignal != null then { changeSignal = attrs.ChangeSignal; } else {})
+    // (if attrs ? Cluster && attrs.Cluster != null then { cluster = attrs.Cluster; } else {})
+    // (if attrs ? DisableFile && attrs.DisableFile != null then { disableFile = attrs.DisableFile; } else {})
     // (if attrs ? Env && attrs.Env != null then { env = attrs.Env; } else {})
     // (if attrs ? Namespace && attrs.Namespace != null then { namespace = attrs.Namespace; } else {})
     // (if attrs ? Policies && attrs.Policies != null then { policies = attrs.Policies; } else {})
+    // (if attrs ? Role && attrs.Role != null then { role = attrs.Role; } else {})
   );
 
   # Convert a VolumeMount Nix module into a JSON object.
@@ -2653,14 +2960,26 @@
   # Convert a WorkloadIdentity Nix module into a JSON object.
   _module.transformers.WorkloadIdentity.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
+    // (if attrs ? aud && attrs.aud != null then { Audience = attrs.aud; } else {})
+    // (if attrs ? changeMode && attrs.changeMode != null then { ChangeMode = attrs.changeMode; } else {})
+    // (if attrs ? changeSignal && attrs.changeSignal != null then { ChangeSignal = attrs.changeSignal; } else {})
     // (if attrs ? env && attrs.env != null then { Env = attrs.env; } else {})
     // (if attrs ? file && attrs.file != null then { File = attrs.file; } else {})
+    // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
+    // (if attrs ? serviceName && attrs.serviceName != null then { ServiceName = attrs.serviceName; } else {})
+    // (if attrs ? ttl && attrs.ttl != null then { TTL = attrs.ttl; } else {})
   );
 
   # Convert a WorkloadIdentity JSON object into a Nix module.
   _module.transformers.WorkloadIdentity.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
+    // (if attrs ? Audience && attrs.Audience != null then { aud = attrs.Audience; } else {})
+    // (if attrs ? ChangeMode && attrs.ChangeMode != null then { changeMode = attrs.ChangeMode; } else {})
+    // (if attrs ? ChangeSignal && attrs.ChangeSignal != null then { changeSignal = attrs.ChangeSignal; } else {})
     // (if attrs ? Env && attrs.Env != null then { env = attrs.Env; } else {})
     // (if attrs ? File && attrs.File != null then { file = attrs.File; } else {})
+    // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
+    // (if attrs ? ServiceName && attrs.ServiceName != null then { serviceName = attrs.ServiceName; } else {})
+    // (if attrs ? TTL && attrs.TTL != null then { ttl = attrs.TTL; } else {})
   );
 }

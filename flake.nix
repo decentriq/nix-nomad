@@ -5,7 +5,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     gomod2nix.url = "github:tweag/gomod2nix";
     nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
-    nixpkgs.url = "github:nixos/nixpkgs/release-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
   };
 
   outputs = { self, nixpkgs, nixpkgs-lib, flake-utils, gomod2nix, ... }: flake-utils.lib.eachDefaultSystem (system: let
