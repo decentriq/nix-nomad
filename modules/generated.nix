@@ -34,6 +34,12 @@
       default = null;
     };
   });
+  _module.types.CniConfig = with lib; with config._module.types; with lib.types; submodule ({
+    options.args = mkOption {
+      type = (nullOr (attrsOf str));
+      default = null;
+    };
+  });
   _module.types.CsiMountOptions = with lib; with config._module.types; with lib.types; submodule ({
     options.fsType = mkOption {
       type = (nullOr str);
@@ -355,6 +361,10 @@
       type = (nullOr int);
       default = null;
     };
+    options.transparentProxy = mkOption {
+      type = (nullOr ConsulTransparentProxy);
+      default = null;
+    };
     options.upstreams = mkOption {
       type = (nullOr (listOf ConsulUpstream));
       default = null;
@@ -385,6 +395,36 @@
   _module.types.ConsulTerminatingConfigEntry = with lib; with config._module.types; with lib.types; submodule ({
     options.services = mkOption {
       type = (nullOr (listOf ConsulLinkedService));
+      default = null;
+    };
+  });
+  _module.types.ConsulTransparentProxy = with lib; with config._module.types; with lib.types; submodule ({
+    options.excludeInboundPorts = mkOption {
+      type = (nullOr (listOf str));
+      default = null;
+    };
+    options.excludeOutboundCidrs = mkOption {
+      type = (nullOr (listOf str));
+      default = null;
+    };
+    options.excludeOutboundPorts = mkOption {
+      type = (nullOr (listOf ints.unsigned));
+      default = null;
+    };
+    options.excludeUids = mkOption {
+      type = (nullOr (listOf str));
+      default = null;
+    };
+    options.noDns = mkOption {
+      type = (nullOr bool);
+      default = null;
+    };
+    options.outboundPort = mkOption {
+      type = (nullOr ints.unsigned);
+      default = null;
+    };
+    options.uid = mkOption {
+      type = (nullOr str);
       default = null;
     };
   });
@@ -449,6 +489,24 @@
     };
     options.servers = mkOption {
       type = (nullOr (listOf str));
+      default = null;
+    };
+  });
+  _module.types.DisconnectStrategy = with lib; with config._module.types; with lib.types; submodule ({
+    options.lostAfter = mkOption {
+      type = (nullOr int);
+      default = null;
+    };
+    options.reconcile = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.replace = mkOption {
+      type = (nullOr bool);
+      default = null;
+    };
+    options.stopOnClientAfter = mkOption {
+      type = (nullOr int);
       default = null;
     };
   });
@@ -557,11 +615,35 @@
       type = (nullOr str);
       default = null;
     };
+    options.ui = mkOption {
+      type = (nullOr JobUiConfig);
+      default = null;
+    };
     options.update = mkOption {
       type = (nullOr UpdateStrategy);
       default = null;
     };
     options.vaultToken = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+  });
+  _module.types.JobUiConfig = with lib; with config._module.types; with lib.types; submodule ({
+    options.description = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.links = mkOption {
+      type = (nullOr (listOf JobUiLink));
+      default = null;
+    };
+  });
+  _module.types.JobUiLink = with lib; with config._module.types; with lib.types; submodule ({
+    options.label = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.url = mkOption {
       type = (nullOr str);
       default = null;
     };
@@ -655,6 +737,10 @@
   _module.types.NetworkResource = with lib; with config._module.types; with lib.types; submodule ({
     options.cidr = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+    options.cni = mkOption {
+      type = (nullOr CniConfig);
       default = null;
     };
     options.device = mkOption {
@@ -827,6 +913,10 @@
     };
     options.numa = mkOption {
       type = (nullOr NumaResource);
+      default = null;
+    };
+    options.secrets = mkOption {
+      type = (nullOr int);
       default = null;
     };
   });
@@ -1013,6 +1103,10 @@
       type = (nullOr str);
       default = null;
     };
+    options.notes = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
     options.onUpdate = mkOption {
       type = (nullOr str);
       default = null;
@@ -1097,6 +1191,10 @@
     };
     options.user = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+    options.volumeMounts = mkOption {
+      type = (nullOr (listOf VolumeMount));
       default = null;
     };
   });
@@ -1217,6 +1315,10 @@
       type = (nullOr (listOf ScalingPolicy));
       default = null;
     };
+    options.schedule = mkOption {
+      type = (nullOr TaskSchedule);
+      default = null;
+    };
     options.services = mkOption {
       type = (nullOr (listOf Service));
       default = null;
@@ -1249,6 +1351,10 @@
     };
     options.headers = mkOption {
       type = (nullOr (attrsOf str));
+      default = null;
+    };
+    options.insecure = mkOption {
+      type = (nullOr bool);
       default = null;
     };
     options.mode = mkOption {
@@ -1301,6 +1407,10 @@
     };
     options.count = mkOption {
       type = (nullOr int);
+      default = null;
+    };
+    options.disconnect = mkOption {
+      type = (nullOr DisconnectStrategy);
       default = null;
     };
     options.ephemeralDisk = mkOption {
@@ -1381,6 +1491,26 @@
     };
     options.sidecar = mkOption {
       type = (nullOr bool);
+      default = null;
+    };
+  });
+  _module.types.TaskSchedule = with lib; with config._module.types; with lib.types; submodule ({
+    options.cron = mkOption {
+      type = (nullOr TaskScheduleCron);
+      default = null;
+    };
+  });
+  _module.types.TaskScheduleCron = with lib; with config._module.types; with lib.types; submodule ({
+    options.end = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.start = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
+    options.timezone = mkOption {
+      type = (nullOr str);
       default = null;
     };
   });
@@ -1539,6 +1669,10 @@
       type = (nullOr bool);
       default = null;
     };
+    options.selinuxLabel = mkOption {
+      type = (nullOr str);
+      default = null;
+    };
     options.volume = mkOption {
       type = (nullOr str);
       default = null;
@@ -1655,6 +1789,18 @@
     // (if attrs ? Operand && attrs.Operand != null then { operator = attrs.Operand; } else {})
     // (if attrs ? RTarget && attrs.RTarget != null then { value = attrs.RTarget; } else {})
     // (if attrs ? Weight && attrs.Weight != null then { weight = attrs.Weight; } else {})
+  );
+
+  # Convert a CniConfig Nix module into a JSON object.
+  _module.transformers.CniConfig.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? args && attrs.args != null then { Args = attrs.args; } else {})
+  );
+
+  # Convert a CniConfig JSON object into a Nix module.
+  _module.transformers.CniConfig.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Args && attrs.Args != null then { args = attrs.Args; } else {})
   );
 
   # Convert a CsiMountOptions Nix module into a JSON object.
@@ -1996,6 +2142,7 @@
     // (if attrs ? expose && attrs.expose != null then { Expose = ConsulExposeConfig.toJSON attrs.expose; } else {})
     // (if attrs ? localServiceAddress && attrs.localServiceAddress != null then { LocalServiceAddress = attrs.localServiceAddress; } else {})
     // (if attrs ? localServicePort && attrs.localServicePort != null then { LocalServicePort = attrs.localServicePort; } else {})
+    // (if attrs ? transparentProxy && attrs.transparentProxy != null then { TransparentProxy = ConsulTransparentProxy.toJSON attrs.transparentProxy; } else {})
     // (if attrs ? upstreams && builtins.isList attrs.upstreams then { Upstreams = builtins.map ConsulUpstream.toJSON attrs.upstreams; } else {})
   );
 
@@ -2006,6 +2153,7 @@
     // (if attrs ? Expose && attrs.Expose != null then { expose = ConsulExposeConfig.fromJSON attrs.Expose; } else {})
     // (if attrs ? LocalServiceAddress && attrs.LocalServiceAddress != null then { localServiceAddress = attrs.LocalServiceAddress; } else {})
     // (if attrs ? LocalServicePort && attrs.LocalServicePort != null then { localServicePort = attrs.LocalServicePort; } else {})
+    // (if attrs ? TransparentProxy && attrs.TransparentProxy != null then { transparentProxy = ConsulTransparentProxy.fromJSON attrs.TransparentProxy; } else {})
     // (if attrs ? Upstreams && builtins.isList attrs.Upstreams then { upstreams = builtins.map ConsulUpstream.fromJSON attrs.Upstreams; } else {})
   );
 
@@ -2039,6 +2187,30 @@
   _module.transformers.ConsulTerminatingConfigEntry.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
     // (if attrs ? Services && builtins.isList attrs.Services then { services = builtins.map ConsulLinkedService.fromJSON attrs.Services; } else {})
+  );
+
+  # Convert a ConsulTransparentProxy Nix module into a JSON object.
+  _module.transformers.ConsulTransparentProxy.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? excludeInboundPorts && attrs.excludeInboundPorts != null then { ExcludeInboundPorts = attrs.excludeInboundPorts; } else {})
+    // (if attrs ? excludeOutboundCidrs && attrs.excludeOutboundCidrs != null then { ExcludeOutboundCIDRs = attrs.excludeOutboundCidrs; } else {})
+    // (if attrs ? excludeOutboundPorts && attrs.excludeOutboundPorts != null then { ExcludeOutboundPorts = attrs.excludeOutboundPorts; } else {})
+    // (if attrs ? excludeUids && attrs.excludeUids != null then { ExcludeUIDs = attrs.excludeUids; } else {})
+    // (if attrs ? noDns && attrs.noDns != null then { NoDNS = attrs.noDns; } else {})
+    // (if attrs ? outboundPort && attrs.outboundPort != null then { OutboundPort = attrs.outboundPort; } else {})
+    // (if attrs ? uid && attrs.uid != null then { UID = attrs.uid; } else {})
+  );
+
+  # Convert a ConsulTransparentProxy JSON object into a Nix module.
+  _module.transformers.ConsulTransparentProxy.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? ExcludeInboundPorts && attrs.ExcludeInboundPorts != null then { excludeInboundPorts = attrs.ExcludeInboundPorts; } else {})
+    // (if attrs ? ExcludeOutboundCIDRs && attrs.ExcludeOutboundCIDRs != null then { excludeOutboundCidrs = attrs.ExcludeOutboundCIDRs; } else {})
+    // (if attrs ? ExcludeOutboundPorts && attrs.ExcludeOutboundPorts != null then { excludeOutboundPorts = attrs.ExcludeOutboundPorts; } else {})
+    // (if attrs ? ExcludeUIDs && attrs.ExcludeUIDs != null then { excludeUids = attrs.ExcludeUIDs; } else {})
+    // (if attrs ? NoDNS && attrs.NoDNS != null then { noDns = attrs.NoDNS; } else {})
+    // (if attrs ? OutboundPort && attrs.OutboundPort != null then { outboundPort = attrs.OutboundPort; } else {})
+    // (if attrs ? UID && attrs.UID != null then { uid = attrs.UID; } else {})
   );
 
   # Convert a ConsulUpstream Nix module into a JSON object.
@@ -2089,6 +2261,24 @@
     // (if attrs ? Options && attrs.Options != null then { options = attrs.Options; } else {})
     // (if attrs ? Searches && attrs.Searches != null then { searches = attrs.Searches; } else {})
     // (if attrs ? Servers && attrs.Servers != null then { servers = attrs.Servers; } else {})
+  );
+
+  # Convert a DisconnectStrategy Nix module into a JSON object.
+  _module.transformers.DisconnectStrategy.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? lostAfter && attrs.lostAfter != null then { LostAfter = attrs.lostAfter; } else {})
+    // (if attrs ? reconcile && attrs.reconcile != null then { Reconcile = attrs.reconcile; } else {})
+    // (if attrs ? replace && attrs.replace != null then { Replace = attrs.replace; } else {})
+    // (if attrs ? stopOnClientAfter && attrs.stopOnClientAfter != null then { StopOnClientAfter = attrs.stopOnClientAfter; } else {})
+  );
+
+  # Convert a DisconnectStrategy JSON object into a Nix module.
+  _module.transformers.DisconnectStrategy.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? LostAfter && attrs.LostAfter != null then { lostAfter = attrs.LostAfter; } else {})
+    // (if attrs ? Reconcile && attrs.Reconcile != null then { reconcile = attrs.Reconcile; } else {})
+    // (if attrs ? Replace && attrs.Replace != null then { replace = attrs.Replace; } else {})
+    // (if attrs ? StopOnClientAfter && attrs.StopOnClientAfter != null then { stopOnClientAfter = attrs.StopOnClientAfter; } else {})
   );
 
   # Convert a DispatchPayloadConfig Nix module into a JSON object.
@@ -2142,6 +2332,7 @@
     // (if attrs ? reschedule && attrs.reschedule != null then { Reschedule = ReschedulePolicy.toJSON attrs.reschedule; } else {})
     // (if attrs ? spreads && builtins.isList attrs.spreads then { Spreads = builtins.map Spread.toJSON attrs.spreads; } else {})
     // (if attrs ? type && attrs.type != null then { Type = attrs.type; } else {})
+    // (if attrs ? ui && attrs.ui != null then { UI = JobUiConfig.toJSON attrs.ui; } else {})
     // (if attrs ? update && attrs.update != null then { Update = UpdateStrategy.toJSON attrs.update; } else {})
     // (if attrs ? vaultToken && attrs.vaultToken != null then { VaultToken = attrs.vaultToken; } else {})
   );
@@ -2169,8 +2360,37 @@
     // (if attrs ? Reschedule && attrs.Reschedule != null then { reschedule = ReschedulePolicy.fromJSON attrs.Reschedule; } else {})
     // (if attrs ? Spreads && builtins.isList attrs.Spreads then { spreads = builtins.map Spread.fromJSON attrs.Spreads; } else {})
     // (if attrs ? Type && attrs.Type != null then { type = attrs.Type; } else {})
+    // (if attrs ? UI && attrs.UI != null then { ui = JobUiConfig.fromJSON attrs.UI; } else {})
     // (if attrs ? Update && attrs.Update != null then { update = UpdateStrategy.fromJSON attrs.Update; } else {})
     // (if attrs ? VaultToken && attrs.VaultToken != null then { vaultToken = attrs.VaultToken; } else {})
+  );
+
+  # Convert a JobUiConfig Nix module into a JSON object.
+  _module.transformers.JobUiConfig.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? description && attrs.description != null then { Description = attrs.description; } else {})
+    // (if attrs ? links && builtins.isList attrs.links then { Links = builtins.map JobUiLink.toJSON attrs.links; } else {})
+  );
+
+  # Convert a JobUiConfig JSON object into a Nix module.
+  _module.transformers.JobUiConfig.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Description && attrs.Description != null then { description = attrs.Description; } else {})
+    // (if attrs ? Links && builtins.isList attrs.Links then { links = builtins.map JobUiLink.fromJSON attrs.Links; } else {})
+  );
+
+  # Convert a JobUiLink Nix module into a JSON object.
+  _module.transformers.JobUiLink.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? label && attrs.label != null then { Label = attrs.label; } else {})
+    // (if attrs ? url && attrs.url != null then { URL = attrs.url; } else {})
+  );
+
+  # Convert a JobUiLink JSON object into a Nix module.
+  _module.transformers.JobUiLink.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Label && attrs.Label != null then { label = attrs.Label; } else {})
+    // (if attrs ? URL && attrs.URL != null then { url = attrs.URL; } else {})
   );
 
   # Convert a LogConfig Nix module into a JSON object.
@@ -2273,6 +2493,7 @@
   _module.transformers.NetworkResource.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
     // (if attrs ? cidr && attrs.cidr != null then { CIDR = attrs.cidr; } else {})
+    // (if attrs ? cni && attrs.cni != null then { CNI = CniConfig.toJSON attrs.cni; } else {})
     // (if attrs ? device && attrs.device != null then { Device = attrs.device; } else {})
     // (if attrs ? dns && attrs.dns != null then { DNS = DnsConfig.toJSON attrs.dns; } else {})
     // (if attrs ? hostname && attrs.hostname != null then { Hostname = attrs.hostname; } else {})
@@ -2287,6 +2508,7 @@
   _module.transformers.NetworkResource.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
     // (if attrs ? CIDR && attrs.CIDR != null then { cidr = attrs.CIDR; } else {})
+    // (if attrs ? CNI && attrs.CNI != null then { cni = CniConfig.fromJSON attrs.CNI; } else {})
     // (if attrs ? Device && attrs.Device != null then { device = attrs.Device; } else {})
     // (if attrs ? DNS && attrs.DNS != null then { dns = DnsConfig.fromJSON attrs.DNS; } else {})
     // (if attrs ? Hostname && attrs.Hostname != null then { hostname = attrs.Hostname; } else {})
@@ -2403,6 +2625,7 @@
     // (if attrs ? memoryMax && attrs.memoryMax != null then { MemoryMaxMB = attrs.memoryMax; } else {})
     // (if attrs ? networks && builtins.isList attrs.networks then { Networks = builtins.map NetworkResource.toJSON attrs.networks; } else {})
     // (if attrs ? numa && attrs.numa != null then { NUMA = NumaResource.toJSON attrs.numa; } else {})
+    // (if attrs ? secrets && attrs.secrets != null then { SecretsMB = attrs.secrets; } else {})
   );
 
   # Convert a Resources JSON object into a Nix module.
@@ -2417,6 +2640,7 @@
     // (if attrs ? MemoryMaxMB && attrs.MemoryMaxMB != null then { memoryMax = attrs.MemoryMaxMB; } else {})
     // (if attrs ? Networks && builtins.isList attrs.Networks then { networks = builtins.map NetworkResource.fromJSON attrs.Networks; } else {})
     // (if attrs ? NUMA && attrs.NUMA != null then { numa = NumaResource.fromJSON attrs.NUMA; } else {})
+    // (if attrs ? SecretsMB && attrs.SecretsMB != null then { secrets = attrs.SecretsMB; } else {})
   );
 
   # Convert a RestartPolicy Nix module into a JSON object.
@@ -2524,6 +2748,7 @@
     // (if attrs ? interval && attrs.interval != null then { Interval = attrs.interval; } else {})
     // (if attrs ? method && attrs.method != null then { Method = attrs.method; } else {})
     // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
+    // (if attrs ? notes && attrs.notes != null then { Notes = attrs.notes; } else {})
     // (if attrs ? onUpdate && attrs.onUpdate != null then { OnUpdate = attrs.onUpdate; } else {})
     // (if attrs ? path && attrs.path != null then { Path = attrs.path; } else {})
     // (if attrs ? port && attrs.port != null then { PortLabel = attrs.port; } else {})
@@ -2555,6 +2780,7 @@
     // (if attrs ? Interval && attrs.Interval != null then { interval = attrs.Interval; } else {})
     // (if attrs ? Method && attrs.Method != null then { method = attrs.Method; } else {})
     // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
+    // (if attrs ? Notes && attrs.Notes != null then { notes = attrs.Notes; } else {})
     // (if attrs ? OnUpdate && attrs.OnUpdate != null then { onUpdate = attrs.OnUpdate; } else {})
     // (if attrs ? Path && attrs.Path != null then { path = attrs.Path; } else {})
     // (if attrs ? PortLabel && attrs.PortLabel != null then { port = attrs.PortLabel; } else {})
@@ -2581,6 +2807,7 @@
     // (if attrs ? resources && attrs.resources != null then { Resources = Resources.toJSON attrs.resources; } else {})
     // (if attrs ? shutdownDelay && attrs.shutdownDelay != null then { ShutdownDelay = attrs.shutdownDelay; } else {})
     // (if attrs ? user && attrs.user != null then { User = attrs.user; } else {})
+    // (if attrs ? volumeMounts && builtins.isList attrs.volumeMounts then { VolumeMounts = builtins.map VolumeMount.toJSON attrs.volumeMounts; } else {})
   );
 
   # Convert a SidecarTask JSON object into a Nix module.
@@ -2597,6 +2824,7 @@
     // (if attrs ? Resources && attrs.Resources != null then { resources = Resources.fromJSON attrs.Resources; } else {})
     // (if attrs ? ShutdownDelay && attrs.ShutdownDelay != null then { shutdownDelay = attrs.ShutdownDelay; } else {})
     // (if attrs ? User && attrs.User != null then { user = attrs.User; } else {})
+    // (if attrs ? VolumeMounts && builtins.isList attrs.VolumeMounts then { volumeMounts = builtins.map VolumeMount.fromJSON attrs.VolumeMounts; } else {})
   );
 
   # Convert a Spread Nix module into a JSON object.
@@ -2654,6 +2882,7 @@
     // (if attrs ? resources && attrs.resources != null then { Resources = Resources.toJSON attrs.resources; } else {})
     // (if attrs ? restart && attrs.restart != null then { RestartPolicy = RestartPolicy.toJSON attrs.restart; } else {})
     // (if attrs ? scalings && builtins.isList attrs.scalings then { ScalingPolicies = builtins.map ScalingPolicy.toJSON attrs.scalings; } else {})
+    // (if attrs ? schedule && attrs.schedule != null then { Schedule = TaskSchedule.toJSON attrs.schedule; } else {})
     // (if attrs ? services && builtins.isList attrs.services then { Services = builtins.map Service.toJSON attrs.services; } else {})
     // (if attrs ? shutdownDelay && attrs.shutdownDelay != null then { ShutdownDelay = attrs.shutdownDelay; } else {})
     // (if attrs ? templates && builtins.isList attrs.templates then { Templates = builtins.map Template.toJSON attrs.templates; } else {})
@@ -2687,6 +2916,7 @@
     // (if attrs ? Resources && attrs.Resources != null then { resources = Resources.fromJSON attrs.Resources; } else {})
     // (if attrs ? RestartPolicy && attrs.RestartPolicy != null then { restart = RestartPolicy.fromJSON attrs.RestartPolicy; } else {})
     // (if attrs ? ScalingPolicies && builtins.isList attrs.ScalingPolicies then { scalings = builtins.map ScalingPolicy.fromJSON attrs.ScalingPolicies; } else {})
+    // (if attrs ? Schedule && attrs.Schedule != null then { schedule = TaskSchedule.fromJSON attrs.Schedule; } else {})
     // (if attrs ? Services && builtins.isList attrs.Services then { services = builtins.map Service.fromJSON attrs.Services; } else {})
     // (if attrs ? ShutdownDelay && attrs.ShutdownDelay != null then { shutdownDelay = attrs.ShutdownDelay; } else {})
     // (if attrs ? Templates && builtins.isList attrs.Templates then { templates = builtins.map Template.fromJSON attrs.Templates; } else {})
@@ -2700,6 +2930,7 @@
     {}
     // (if attrs ? destination && attrs.destination != null then { RelativeDest = attrs.destination; } else {})
     // (if attrs ? headers && attrs.headers != null then { GetterHeaders = attrs.headers; } else {})
+    // (if attrs ? insecure && attrs.insecure != null then { GetterInsecure = attrs.insecure; } else {})
     // (if attrs ? mode && attrs.mode != null then { GetterMode = attrs.mode; } else {})
     // (if attrs ? options && attrs.options != null then { GetterOptions = attrs.options; } else {})
     // (if attrs ? source && attrs.source != null then { GetterSource = attrs.source; } else {})
@@ -2710,6 +2941,7 @@
     {}
     // (if attrs ? RelativeDest && attrs.RelativeDest != null then { destination = attrs.RelativeDest; } else {})
     // (if attrs ? GetterHeaders && attrs.GetterHeaders != null then { headers = attrs.GetterHeaders; } else {})
+    // (if attrs ? GetterInsecure && attrs.GetterInsecure != null then { insecure = attrs.GetterInsecure; } else {})
     // (if attrs ? GetterMode && attrs.GetterMode != null then { mode = attrs.GetterMode; } else {})
     // (if attrs ? GetterOptions && attrs.GetterOptions != null then { options = attrs.GetterOptions; } else {})
     // (if attrs ? GetterSource && attrs.GetterSource != null then { source = attrs.GetterSource; } else {})
@@ -2742,6 +2974,7 @@
     // (if attrs ? constraints && builtins.isList attrs.constraints then { Constraints = builtins.map Constraint.toJSON attrs.constraints; } else {})
     // (if attrs ? consul && attrs.consul != null then { Consul = Consul.toJSON attrs.consul; } else {})
     // (if attrs ? count && attrs.count != null then { Count = attrs.count; } else {})
+    // (if attrs ? disconnect && attrs.disconnect != null then { Disconnect = DisconnectStrategy.toJSON attrs.disconnect; } else {})
     // (if attrs ? ephemeralDisk && attrs.ephemeralDisk != null then { EphemeralDisk = EphemeralDisk.toJSON attrs.ephemeralDisk; } else {})
     // (if attrs ? maxClientDisconnect && attrs.maxClientDisconnect != null then { MaxClientDisconnect = attrs.maxClientDisconnect; } else {})
     // (if attrs ? meta && attrs.meta != null then { Meta = attrs.meta; } else {})
@@ -2768,6 +3001,7 @@
     // (if attrs ? Constraints && builtins.isList attrs.Constraints then { constraints = builtins.map Constraint.fromJSON attrs.Constraints; } else {})
     // (if attrs ? Consul && attrs.Consul != null then { consul = Consul.fromJSON attrs.Consul; } else {})
     // (if attrs ? Count && attrs.Count != null then { count = attrs.Count; } else {})
+    // (if attrs ? Disconnect && attrs.Disconnect != null then { disconnect = DisconnectStrategy.fromJSON attrs.Disconnect; } else {})
     // (if attrs ? EphemeralDisk && attrs.EphemeralDisk != null then { ephemeralDisk = EphemeralDisk.fromJSON attrs.EphemeralDisk; } else {})
     // (if attrs ? MaxClientDisconnect && attrs.MaxClientDisconnect != null then { maxClientDisconnect = attrs.MaxClientDisconnect; } else {})
     // (if attrs ? Meta && attrs.Meta != null then { meta = attrs.Meta; } else {})
@@ -2799,6 +3033,34 @@
     {}
     // (if attrs ? Hook && attrs.Hook != null then { hook = attrs.Hook; } else {})
     // (if attrs ? Sidecar && attrs.Sidecar != null then { sidecar = attrs.Sidecar; } else {})
+  );
+
+  # Convert a TaskSchedule Nix module into a JSON object.
+  _module.transformers.TaskSchedule.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? cron && attrs.cron != null then { Cron = TaskScheduleCron.toJSON attrs.cron; } else {})
+  );
+
+  # Convert a TaskSchedule JSON object into a Nix module.
+  _module.transformers.TaskSchedule.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Cron && attrs.Cron != null then { cron = TaskScheduleCron.fromJSON attrs.Cron; } else {})
+  );
+
+  # Convert a TaskScheduleCron Nix module into a JSON object.
+  _module.transformers.TaskScheduleCron.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? end && attrs.end != null then { End = attrs.end; } else {})
+    // (if attrs ? start && attrs.start != null then { Start = attrs.start; } else {})
+    // (if attrs ? timezone && attrs.timezone != null then { Timezone = attrs.timezone; } else {})
+  );
+
+  # Convert a TaskScheduleCron JSON object into a Nix module.
+  _module.transformers.TaskScheduleCron.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? End && attrs.End != null then { end = attrs.End; } else {})
+    // (if attrs ? Start && attrs.Start != null then { start = attrs.Start; } else {})
+    // (if attrs ? Timezone && attrs.Timezone != null then { timezone = attrs.Timezone; } else {})
   );
 
   # Convert a Template Nix module into a JSON object.
@@ -2905,6 +3167,7 @@
     // (if attrs ? destination && attrs.destination != null then { Destination = attrs.destination; } else {})
     // (if attrs ? propagationMode && attrs.propagationMode != null then { PropagationMode = attrs.propagationMode; } else {})
     // (if attrs ? readOnly && attrs.readOnly != null then { ReadOnly = attrs.readOnly; } else {})
+    // (if attrs ? selinuxLabel && attrs.selinuxLabel != null then { SELinuxLabel = attrs.selinuxLabel; } else {})
     // (if attrs ? volume && attrs.volume != null then { Volume = attrs.volume; } else {})
   );
 
@@ -2914,6 +3177,7 @@
     // (if attrs ? Destination && attrs.Destination != null then { destination = attrs.Destination; } else {})
     // (if attrs ? PropagationMode && attrs.PropagationMode != null then { propagationMode = attrs.PropagationMode; } else {})
     // (if attrs ? ReadOnly && attrs.ReadOnly != null then { readOnly = attrs.ReadOnly; } else {})
+    // (if attrs ? SELinuxLabel && attrs.SELinuxLabel != null then { selinuxLabel = attrs.SELinuxLabel; } else {})
     // (if attrs ? Volume && attrs.Volume != null then { volume = attrs.Volume; } else {})
   );
 

@@ -23,8 +23,8 @@ schema = 3
     version = "v1.0.2"
     hash = "sha256-prifkrFs+lawGTig3GwxddR0QM9E1+IpgZWCKoOnS5M="
   [mod."github.com/hashicorp/nomad/api"]
-    version = "v0.0.0-20240416192643-0f34c85ee63f"
-    hash = "sha256-53he8/3Ta4i+BVuGJ+PIKTBvxwbNQuwAfBx4lVY/hjs="
+    version = "v0.0.0-20240917201834-22ab32e6cff6"
+    hash = "sha256-MSXTYz7iZ03oU0jDor8y9oNXM6j67VnbNkNXvIcNRLQ="
   [mod."github.com/mitchellh/go-homedir"]
     version = "v1.1.0"
     hash = "sha256-oduBKXHAQG8X6aqLEpqZHs5DOKe84u6WkBwi4W6cv3k="
@@ -34,6 +34,3 @@ schema = 3
   [mod."github.com/stoewer/go-strcase"]
     version = "v1.3.0"
     hash = "sha256-X0ilcefeqVQ44B9WT6euCMcigs7oLFypOQaGI33kGr8="
-  [mod."golang.org/x/exp"]
-    version = "v0.0.0-20241009180824-f66d83c29e7c"
-    hash = "sha256-ICL1UU2rrOBespsjNrlvrAhZOFLMcxYWAx8pDQCgAXM="

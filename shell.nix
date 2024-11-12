@@ -2,9 +2,9 @@
 
 mkShell {
   buildInputs = [
-    go
+    go_22
     gomod2nix
     jq
-    nomad_1_7
+    nomad_1_8
   ];
 }
