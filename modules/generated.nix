@@ -733,6 +733,10 @@
       type = (nullOr str);
       default = null;
     };
+    options.devices = mkOption {
+      type = (nullOr (listOf str));
+      default = null;
+    };
   });
   _module.types.NetworkResource = with lib; with config._module.types; with lib.types; submodule ({
     options.cidr = mkOption {
@@ -815,6 +819,10 @@
   _module.types.Port = with lib; with config._module.types; with lib.types; submodule ({ name, ... }: {
     options.hostNetwork = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+    options.ignoreCollision = mkOption {
+      type = (nullOr bool);
       default = null;
     };
     options.label = mkOption {
@@ -1037,6 +1045,10 @@
       type = (nullOr str);
       default = null;
     };
+    options.weights = mkOption {
+      type = (nullOr ServiceWeights);
+      default = null;
+    };
   });
   _module.types.ServiceCheck = with lib; with config._module.types; with lib.types; submodule ({
     options.addressMode = mkOption {
@@ -1145,6 +1157,16 @@
     };
     options.type = mkOption {
       type = (nullOr str);
+      default = null;
+    };
+  });
+  _module.types.ServiceWeights = with lib; with config._module.types; with lib.types; submodule ({
+    options.passing = mkOption {
+      type = (nullOr int);
+      default = null;
+    };
+    options.warning = mkOption {
+      type = (nullOr int);
       default = null;
     };
   });
@@ -1345,6 +1367,10 @@
     };
   });
   _module.types.TaskArtifact = with lib; with config._module.types; with lib.types; submodule ({
+    options.chown = mkOption {
+      type = (nullOr bool);
+      default = null;
+    };
     options.destination = mkOption {
       type = (nullOr str);
       default = null;
@@ -1709,6 +1735,10 @@
       type = (nullOr str);
       default = null;
     };
+    options.sticky = mkOption {
+      type = (nullOr bool);
+      default = null;
+    };
     options.type = mkOption {
       type = (nullOr str);
       default = null;
@@ -1741,6 +1771,10 @@
     };
     options.file = mkOption {
       type = (nullOr bool);
+      default = null;
+    };
+    options.filepath = mkOption {
+      type = (nullOr str);
       default = null;
     };
     options.name = mkOption {
@@ -2481,12 +2515,14 @@
   _module.transformers.NumaResource.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
     // (if attrs ? affinity && attrs.affinity != null then { Affinity = attrs.affinity; } else {})
+    // (if attrs ? devices && attrs.devices != null then { Devices = attrs.devices; } else {})
   );
 
   # Convert a NumaResource JSON object into a Nix module.
   _module.transformers.NumaResource.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
     // (if attrs ? Affinity && attrs.Affinity != null then { affinity = attrs.Affinity; } else {})
+    // (if attrs ? Devices && attrs.Devices != null then { devices = attrs.Devices; } else {})
   );
 
   # Convert a NetworkResource Nix module into a JSON object.
@@ -2559,6 +2595,7 @@
   _module.transformers.Port.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
     // (if attrs ? hostNetwork && attrs.hostNetwork != null then { HostNetwork = attrs.hostNetwork; } else {})
+    // (if attrs ? ignoreCollision && attrs.ignoreCollision != null then { IgnoreCollision = attrs.ignoreCollision; } else {})
     // (if attrs ? label && attrs.label != null then { Label = attrs.label; } else {})
     // (if attrs ? static && attrs.static != null then { Value = attrs.static; } else {})
     // (if attrs ? to && attrs.to != null then { To = attrs.to; } else {})
@@ -2568,6 +2605,7 @@
   _module.transformers.Port.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
     // (if attrs ? HostNetwork && attrs.HostNetwork != null then { hostNetwork = attrs.HostNetwork; } else {})
+    // (if attrs ? IgnoreCollision && attrs.IgnoreCollision != null then { ignoreCollision = attrs.IgnoreCollision; } else {})
     // (if attrs ? Label && attrs.Label != null then { label = attrs.Label; } else {})
     // (if attrs ? Value && attrs.Value != null then { static = attrs.Value; } else {})
     // (if attrs ? To && attrs.To != null then { to = attrs.To; } else {})
@@ -2704,6 +2742,7 @@
     // (if attrs ? taggedAddresses && attrs.taggedAddresses != null then { TaggedAddresses = attrs.taggedAddresses; } else {})
     // (if attrs ? tags && attrs.tags != null then { Tags = attrs.tags; } else {})
     // (if attrs ? task && attrs.task != null then { TaskName = attrs.task; } else {})
+    // (if attrs ? weights && attrs.weights != null then { Weights = ServiceWeights.toJSON attrs.weights; } else {})
   );
 
   # Convert a Service JSON object into a Nix module.
@@ -2727,6 +2766,7 @@
     // (if attrs ? TaggedAddresses && attrs.TaggedAddresses != null then { taggedAddresses = attrs.TaggedAddresses; } else {})
     // (if attrs ? Tags && attrs.Tags != null then { tags = attrs.Tags; } else {})
     // (if attrs ? TaskName && attrs.TaskName != null then { task = attrs.TaskName; } else {})
+    // (if attrs ? Weights && attrs.Weights != null then { weights = ServiceWeights.fromJSON attrs.Weights; } else {})
   );
 
   # Convert a ServiceCheck Nix module into a JSON object.
@@ -2791,6 +2831,20 @@
     // (if attrs ? TLSServerName && attrs.TLSServerName != null then { tlsServerName = attrs.TLSServerName; } else {})
     // (if attrs ? TLSSkipVerify && attrs.TLSSkipVerify != null then { tlsSkipVerify = attrs.TLSSkipVerify; } else {})
     // (if attrs ? Type && attrs.Type != null then { type = attrs.Type; } else {})
+  );
+
+  # Convert a ServiceWeights Nix module into a JSON object.
+  _module.transformers.ServiceWeights.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
+    {}
+    // (if attrs ? passing && attrs.passing != null then { Passing = attrs.passing; } else {})
+    // (if attrs ? warning && attrs.warning != null then { Warning = attrs.warning; } else {})
+  );
+
+  # Convert a ServiceWeights JSON object into a Nix module.
+  _module.transformers.ServiceWeights.fromJSON = with lib; with config._module.transformers; attrs: (
+    {}
+    // (if attrs ? Passing && attrs.Passing != null then { passing = attrs.Passing; } else {})
+    // (if attrs ? Warning && attrs.Warning != null then { warning = attrs.Warning; } else {})
   );
 
   # Convert a SidecarTask Nix module into a JSON object.
@@ -2928,6 +2982,7 @@
   # Convert a TaskArtifact Nix module into a JSON object.
   _module.transformers.TaskArtifact.toJSON = with lib; with config._module.transformers; attrs: if !(builtins.isAttrs attrs) then null else (
     {}
+    // (if attrs ? chown && attrs.chown != null then { Chown = attrs.chown; } else {})
     // (if attrs ? destination && attrs.destination != null then { RelativeDest = attrs.destination; } else {})
     // (if attrs ? headers && attrs.headers != null then { GetterHeaders = attrs.headers; } else {})
     // (if attrs ? insecure && attrs.insecure != null then { GetterInsecure = attrs.insecure; } else {})
@@ -2939,6 +2994,7 @@
   # Convert a TaskArtifact JSON object into a Nix module.
   _module.transformers.TaskArtifact.fromJSON = with lib; with config._module.transformers; attrs: (
     {}
+    // (if attrs ? Chown && attrs.Chown != null then { chown = attrs.Chown; } else {})
     // (if attrs ? RelativeDest && attrs.RelativeDest != null then { destination = attrs.RelativeDest; } else {})
     // (if attrs ? GetterHeaders && attrs.GetterHeaders != null then { headers = attrs.GetterHeaders; } else {})
     // (if attrs ? GetterInsecure && attrs.GetterInsecure != null then { insecure = attrs.GetterInsecure; } else {})
@@ -3191,6 +3247,7 @@
     // (if attrs ? perAlloc && attrs.perAlloc != null then { PerAlloc = attrs.perAlloc; } else {})
     // (if attrs ? readOnly && attrs.readOnly != null then { ReadOnly = attrs.readOnly; } else {})
     // (if attrs ? source && attrs.source != null then { Source = attrs.source; } else {})
+    // (if attrs ? sticky && attrs.sticky != null then { Sticky = attrs.sticky; } else {})
     // (if attrs ? type && attrs.type != null then { Type = attrs.type; } else {})
   );
 
@@ -3204,6 +3261,7 @@
     // (if attrs ? PerAlloc && attrs.PerAlloc != null then { perAlloc = attrs.PerAlloc; } else {})
     // (if attrs ? ReadOnly && attrs.ReadOnly != null then { readOnly = attrs.ReadOnly; } else {})
     // (if attrs ? Source && attrs.Source != null then { source = attrs.Source; } else {})
+    // (if attrs ? Sticky && attrs.Sticky != null then { sticky = attrs.Sticky; } else {})
     // (if attrs ? Type && attrs.Type != null then { type = attrs.Type; } else {})
   );
 
@@ -3229,6 +3287,7 @@
     // (if attrs ? changeSignal && attrs.changeSignal != null then { ChangeSignal = attrs.changeSignal; } else {})
     // (if attrs ? env && attrs.env != null then { Env = attrs.env; } else {})
     // (if attrs ? file && attrs.file != null then { File = attrs.file; } else {})
+    // (if attrs ? filepath && attrs.filepath != null then { Filepath = attrs.filepath; } else {})
     // (if attrs ? name && attrs.name != null then { Name = attrs.name; } else {})
     // (if attrs ? serviceName && attrs.serviceName != null then { ServiceName = attrs.serviceName; } else {})
     // (if attrs ? ttl && attrs.ttl != null then { TTL = attrs.ttl; } else {})
@@ -3242,6 +3301,7 @@
     // (if attrs ? ChangeSignal && attrs.ChangeSignal != null then { changeSignal = attrs.ChangeSignal; } else {})
     // (if attrs ? Env && attrs.Env != null then { env = attrs.Env; } else {})
     // (if attrs ? File && attrs.File != null then { file = attrs.File; } else {})
+    // (if attrs ? Filepath && attrs.Filepath != null then { filepath = attrs.Filepath; } else {})
     // (if attrs ? Name && attrs.Name != null then { name = attrs.Name; } else {})
     // (if attrs ? ServiceName && attrs.ServiceName != null then { serviceName = attrs.ServiceName; } else {})
     // (if attrs ? TTL && attrs.TTL != null then { ttl = attrs.TTL; } else {})

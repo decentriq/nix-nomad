@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/gertd/go-pluralize v0.2.1
-	github.com/hashicorp/nomad/api v0.0.0-20240917201834-22ab32e6cff6
+	github.com/hashicorp/nomad/api v0.0.0-20250115152710-75d0ac657ec0
 	github.com/stoewer/go-strcase v1.3.0
 )
 
